@@ -10,7 +10,7 @@ public class SingleWordCounter implements TextProcessor {
 	}
 
 	public void process(String w) {
-		if (w.equals(word)) {	//Svar på D2
+		if (w.equals(word)) {
 			n++;
 		}
 	}
