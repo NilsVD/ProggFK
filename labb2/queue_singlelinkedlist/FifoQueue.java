@@ -49,7 +49,7 @@ public class FifoQueue<E> extends AbstractQueue<E> implements Queue<E> {
 		if(last == null) {
 			return null;	//	Är detta nödvändigt eller är last.next.element == null?
 		} else {
-		return last.next.element;
+			return last.next.element;
 		}
 	}
 
@@ -75,7 +75,48 @@ public class FifoQueue<E> extends AbstractQueue<E> implements Queue<E> {
 	 * @return an iterator over the elements in this queue
 	 */	
 	public Iterator<E> iterator() {
-		return null;
+		return new QueueIterator();
+	}
+	
+	private class QueueIterator implements Iterator<E> {
+		private QueueNode<E> pos;
+		private int count;
+		
+		private QueueIterator() {
+			pos = last;
+			this.count = 0;
+			/*if (size == 0) {
+				pos = last;
+			} else {
+				pos = last.next;
+			}*/
+			/*try {
+				pos = last.next;
+			} catch (NullPointerException e) {
+				
+			}*/
+			
+		}
+		public boolean hasNext() {
+			//return !pos.equals(last);
+			if (pos == null) {
+				return false;
+			} else {
+				if (count == size) {
+					return false;
+				} else {
+					return true;
+				}
+			}
+		}
+		public E next() {
+			if (pos == null || count == size) {
+				throw new NoSuchElementException();
+			}
+			pos = pos.next;
+			count++;
+			return pos.element;
+		}
 	}
 	
 	private static class QueueNode<E> {
@@ -85,6 +126,26 @@ public class FifoQueue<E> extends AbstractQueue<E> implements Queue<E> {
 		private QueueNode(E x) {
 			element = x;
 			next = null;
+		}
+	}
+	
+	public void append(FifoQueue<E> q) {
+		//if (last.next == q.last.next || size==0 || q.size() == 0) {
+		if (last == null && q.last != null) {
+			last = q.last;
+			size = q.size();
+			q.last = null;
+			q.size = 0;
+		} else if (last != null && q.last == null) {
+			// Dont do anything
+		} else if (last != null && q.last != null) {
+			size += q.size();
+			QueueNode<E> j = last.next;
+			last.next = q.last.next;
+			q.last.next = j;
+			q.last = null;
+		} else if (last.next == q.last.next) {		// Tror man ska kunna lägga till tomma listor
+			throw new IllegalArgumentException();
 		}
 	}
 
