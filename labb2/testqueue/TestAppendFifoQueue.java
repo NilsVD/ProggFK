@@ -36,14 +36,15 @@ public class TestAppendFifoQueue {
 	 * Test two empty queues.
 	 */
 	@Test
-	public final void testTwoEmptyQueues() {
+	public final void testTwoEmptyQueues() { // FINAL!?!?!?!?! :O
 		assertTrue(IntQueueOne.isEmpty());
 		assertTrue(IntQueueOne.size() == 0);
 		assertTrue(IntQueueTwo.isEmpty());
 		assertTrue(IntQueueTwo.size() == 0);
 		try {
-			((FifoQueue<Integer>) IntQueueOne).append((FifoQueue<Integer>) IntQueueTwo);
-		} catch (NullPointerException e) {
+			((FifoQueue<Integer>) IntQueueOne).append((FifoQueue<Integer>) IntQueueTwo); // varför (FifoQueue<Integer>) 
+			fail("Should raise IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			//Sucess
 		}
 	}
@@ -59,6 +60,7 @@ public class TestAppendFifoQueue {
 		assertTrue(IntQueueTwo.isEmpty());
 		((FifoQueue<Integer>) IntQueueOne).append((FifoQueue<Integer>) IntQueueTwo);
 		assertTrue("Wrong size after append", IntQueueOne.size() == 3);
+		assertTrue("Wrong size after append", IntQueueTwo.size() == 0);
 	}
 	
 	/**
@@ -66,9 +68,6 @@ public class TestAppendFifoQueue {
 	 */
 	@Test
 	public final void testAppendQueueToEmpty() {
-		for (int i = 0; i < IntQueueOne.size(); i++) {
-			IntQueueOne.poll();
-		}
 		assertTrue(IntQueueOne.isEmpty());
 		int nbrNodes = 10;
 		for (int j = 0; j < nbrNodes; j++) {
@@ -77,7 +76,46 @@ public class TestAppendFifoQueue {
 		assertTrue(IntQueueTwo.size()==10);
 		((FifoQueue<Integer>) IntQueueOne).append((FifoQueue<Integer>) IntQueueTwo);
 		assertTrue("Wrong size after append", IntQueueOne.size() == nbrNodes);
-		assertTrue(IntQueueTwo.isEmpty());
-		assertTrue(IntQueueTwo.peek() == null);
+		assertTrue("Appended que is not empty", IntQueueTwo.isEmpty());
+		assertTrue("Appended que is not empty", IntQueueTwo.peek() == null);
+	}
+	
+	/**
+	 * Test appending non empty queue appended to non empty queue.
+	 */
+	@Test
+	public final void testAppendQueueToQueue() {
+		for (int j = 0; j < 5; j++) {
+			IntQueueOne.offer(j);
+		}
+		for (int j = 0; j < 7; j++) {
+			IntQueueTwo.offer(j+5);
+		}
+		assertTrue(IntQueueOne.size()==5);
+		assertTrue(IntQueueTwo.size()==7);
+		((FifoQueue<Integer>) IntQueueOne).append((FifoQueue<Integer>) IntQueueTwo);
+		assertTrue("Wrong size after append", IntQueueOne.size() == 12);
+		assertTrue("Appended que is not empty", IntQueueTwo.isEmpty());
+		assertTrue("Appended que is not empty", IntQueueTwo.peek() == null);
+		for(int k = 0; k < 12; k++) {
+			assertEquals("Wrong result from poll", Integer.valueOf(k), IntQueueOne.poll());
+		}
+		
+	}
+	
+	// Test appending identical queues
+	@Test
+	public final void testAppendIdenticalQueue() {
+		for (int j = 0; j < 5; j++) {
+			IntQueueOne.offer(j);
+		}
+		try {
+			((FifoQueue<Integer>) IntQueueOne).append((FifoQueue<Integer>) IntQueueOne);
+			fail("Should raise IllegalArgumentException");
+		}
+		catch(IllegalArgumentException e) {
+			// Success
+		}
+		
 	}
 }
