@@ -85,30 +85,16 @@ public class FifoQueue<E> extends AbstractQueue<E> implements Queue<E> {
 		private QueueIterator() {
 			pos = last;
 			this.count = 0;
-			/*if (size == 0) {
-				pos = last;
-			} else {
-				pos = last.next;
-			}*/
-			/*try {
-				pos = last.next;
-			} catch (NullPointerException e) {
-				
-			}*/
-			
 		}
+		
 		public boolean hasNext() {
-			//return !pos.equals(last);
-			if (pos == null) {
+			if (pos == null || count == size) {
 				return false;
 			} else {
-				if (count == size) {
-					return false;
-				} else {
-					return true;
-				}
+				return true;
 			}
 		}
+		
 		public E next() {
 			if (pos == null || count == size) {
 				throw new NoSuchElementException();
@@ -130,8 +116,9 @@ public class FifoQueue<E> extends AbstractQueue<E> implements Queue<E> {
 	}
 	
 	public void append(FifoQueue<E> q) {
-		//if (last.next == q.last.next || size==0 || q.size() == 0) {
-		if (last == null && q.last != null) {
+		if (last == q.last) {
+			throw new IllegalArgumentException();
+		} else if (last == null && q.last != null) {
 			last = q.last;
 			size = q.size();
 			q.last = null;
@@ -143,10 +130,9 @@ public class FifoQueue<E> extends AbstractQueue<E> implements Queue<E> {
 			QueueNode<E> j = last.next;
 			last.next = q.last.next;
 			q.last.next = j;
+			last = q.last;
 			q.last = null;
-		} else if (last.next == q.last.next) {		// Tror man ska kunna lägga till tomma listor
-			throw new IllegalArgumentException();
+			q.size = 0;
 		}
 	}
-
 }
