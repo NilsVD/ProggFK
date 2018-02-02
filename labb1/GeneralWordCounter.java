@@ -39,5 +39,9 @@ public class GeneralWordCounter implements TextProcessor {
 			System.out.println(wordList.get(i).toString() + " ");
 		}
  		
+	}public Set<Map.Entry<String, Integer>> getWords(){
+		return generalWordMap.entrySet();
 	}
+	
+	
 }
