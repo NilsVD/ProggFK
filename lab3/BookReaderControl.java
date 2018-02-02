@@ -10,16 +10,19 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import textproc.GeneralWordCounter;
+import textproc.WordCountComparator;
 
 public class BookReaderControl extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		// TODO Auto-generated method stub
 		BorderPane root = new BorderPane();
 		
 		Scene scene = new Scene(root, 500,500);
@@ -46,10 +49,29 @@ public class BookReaderControl extends Application {
 		s.close();
 		
 		//Set<Map.Entry<String, Integer>> generalWords = wordcount.getWords();
-		
 		ObservableList<Map.Entry<String, Integer>> words = FXCollections.observableArrayList(wordcount.getWords());
 		ListView<Map.Entry<String, Integer>> listView = new ListView<Map.Entry<String, Integer>>(words);
 		
+		HBox hbox = new HBox();
+		Button AlphButton = new Button ("Alphabetic");
+		Button FreqButton = new Button ("Frequency");
+		TextField search = new TextField("");
+		Button FindButton = new Button ("Find");
+		hbox.getChildren().addAll(AlphButton, FreqButton, search, FindButton);
+		root.setBottom(hbox);
+		
+		FreqButton.setOnAction(event -> words.sort((e1,e2) -> e2.getValue() - e1.getValue() ));
+		AlphButton.setOnAction(event -> words.sort((e1,e2) -> e1.getKey().compareTo(e2.getKey()) ));
+		FindButton.setOnAction(event -> {
+			String searchWord = search.getText();
+			for(int i=0 ; i<words.size();i++) {
+				if(words.get(i).getKey().equals(searchWord)){
+				listView.scrollTo(words.get(i));	
+				//System.out.println("Hittad");
+				}
+			}
+		});
+
 		root.setCenter(listView);
 	}
 
